@@ -143,6 +143,7 @@ plt.annotate(
     arrowprops={"linewidth": 1, "facecolor": 'k', "arrowstyle": '->,head_width=.25'},
     ha="right",
 )
+plt.xlim(left=np.min(rc_w))
 
 plt.legend()
 
@@ -160,6 +161,8 @@ plt.axvline(x=internal_samplerate / 2, color="k", linestyle="--")
 plt.axvline(x=reporting_rate, color="k", linestyle="--")
 plt.axvline(x=reporting_rate / 2, color="k", linestyle="-", linewidth=3)
 plt.axvline(x=rc_cutoff, color="k", linestyle="--")
+
+plt.xlim(left=np.min(rc_w))
 
 plt.legend()
 
