@@ -109,11 +109,11 @@ for order in [3, 4, 5, 6]:
 
     func = lambda x: np.sin(2.0 * np.pi * x * samplerate / 8)
 
-    for ax, xlim in [(ax3, None), (ax4, (70, 110))]:
+    for ax, xlim in [(ax3, None), (ax4, (170, 210))]:
         plt.sca(ax)
         
         #   Ideal signal
-        t = np.linspace(0.0, 8.0 * sample_period, 1000)
+        t = np.linspace(0.0, 8.5 * sample_period, 1000)
         y = func(t)
         plt.plot(t * 1e6, func(t), color='k', label="Signal")
 
