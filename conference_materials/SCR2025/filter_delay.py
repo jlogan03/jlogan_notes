@@ -55,7 +55,7 @@ sample_period = 1.0 / samplerate  # [s]
 reporting_rate = 1e3  # [Hz]
 fractional_delays = delays / sample_period  # [dimensionless] 
 
-for order in [3, 4, 6]:
+for order in [3, 4, 5, 6]:
 
     taps = [poly_taps(order, delay) for delay in fractional_delays]
 
@@ -112,7 +112,7 @@ for order in [3, 4, 6]:
     #   Ideal signal
     t = np.linspace(0.0, 8.0 * sample_period, 1000)
     y = func(t)
-    plt.plot(t / 1e6, func(t), color='k', label="Signal")
+    plt.plot(t * 1e6, func(t), color='k', label="Signal")
 
     #   Target sample times
     sample_t = np.arange(0.0, 9.0 * sample_period, sample_period)
@@ -123,14 +123,14 @@ for order in [3, 4, 6]:
         group_sample_time = sample_t - delay
         group_sample_values = func(group_sample_time)
         label = "Group Samples" if i ==0 else None
-        plt.scatter(group_sample_time / 1e6, group_sample_values, color='k', alpha=1.0, marker="|", s=100, label=label)
+        plt.scatter(group_sample_time * 1e6, group_sample_values, color='k', alpha=1.0, marker="|", s=100, label=label)
 
         corrected_samples = np.convolve(taps[i], group_sample_values, mode="valid")
         label = "Corrected Group Samples" if i ==0 else None
-        plt.scatter([sample_t[order-1:] / 1e6], corrected_samples, color='r', alpha=1.0, marker="_", s=100, label=label)
+        plt.scatter([sample_t[order-1:] * 1e6], corrected_samples, color='r', alpha=1.0, marker="_", s=100, label=label)
 
     #   Corrected sample values applied to target sample time
-    plt.scatter(sample_t / 1e6, func(sample_t), color='r', marker="|", s=500, label="Target Sample Time")
+    plt.scatter(sample_t * 1e6, func(sample_t), color='r', marker="|", s=500, label="Target Sample Time")
 
     plt.xlabel("Time [us]")
 
