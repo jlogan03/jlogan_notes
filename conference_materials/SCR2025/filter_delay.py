@@ -53,52 +53,54 @@ def poly_taps(order: int, delay: float) -> NDArray:
 samplerate = 40e3  # [Hz]
 sample_period = 1.0 / samplerate  # [s]
 reporting_rate = 1e3  # [Hz]
-
-order = 3
 fractional_delays = delays / sample_period  # [dimensionless] 
 
-taps = [poly_taps(order, delay) for delay in fractional_delays]
+for order in [3, 4, 6]:
 
-w = 2.0 * np.pi * samplerate * np.logspace(-4, np.log10(0.5), 1000)
-responses = []
-for b in taps:
-    _, h = signal.freqz(b, worN=w, fs=2.0 * np.pi * samplerate)
-    mag = 20.0 * np.log10(np.abs(h))  # [dB] frequency response magnitude
-    phase = np.unwrap(np.angle(h, deg=True))  # [deg] phase lag frequency response
-    responses.append((mag, phase))
+    taps = [poly_taps(order, delay) for delay in fractional_delays]
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8), sharex=True)
-plt.suptitle(f"Per-Channel Fractional Delays\nPoly Order = {order - 1} ({order}-Tap), Samplerate = {samplerate * 1e-3:.2f} kHz")
-for mag, phase in responses:
+    w = 2.0 * np.pi * samplerate * np.logspace(-4, np.log10(0.5), 1000)
+    responses = []
+    for b in taps:
+        _, h = signal.freqz(b, worN=w, fs=2.0 * np.pi * samplerate)
+        mag = 20.0 * np.log10(np.abs(h))  # [dB] frequency response magnitude
+        phase = np.unwrap(np.angle(h, deg=True))  # [deg] phase lag frequency response
+        responses.append((mag, phase))
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8), sharex=True)
+    plt.suptitle(f"Per-Channel Fractional Delays\nPoly Order = {order - 1} ({order}-Tap), Samplerate = {samplerate * 1e-3:.2f} kHz")
+    for mag, phase in responses:
+        plt.sca(ax1)
+        plt.semilogx(
+            w / (2.0 * np.pi),
+            mag,
+            color="k",
+            alpha=0.4,
+            linestyle="-",
+        )
+        plt.ylabel("Magnitude [dB]")
+
+        plt.sca(ax2)
+        plt.semilogx(
+            w / (2.0 * np.pi),
+            phase,
+            color="k",
+            alpha=0.4,
+            linestyle="-",
+        )
+        plt.xlabel("Frequency [Hz]")
+        plt.ylabel("Phase [deg]")
+
     plt.sca(ax1)
-    plt.semilogx(
-        w / (2.0 * np.pi),
-        mag,
-        color="k",
-        alpha=0.4,
-        linestyle="-",
-    )
-    plt.ylabel("Magnitude [dB]")
-
+    plt.axvline(samplerate / 2, color='k', linewidth=1, label="Nyquist of Samplerate")
+    plt.axvline(reporting_rate, color='k', linewidth=3, label="Typical Reporting Rate")
+    plt.legend()
     plt.sca(ax2)
-    plt.semilogx(
-        w / (2.0 * np.pi),
-        phase,
-        color="k",
-        alpha=0.4,
-        linestyle="-",
-    )
-    plt.xlabel("Frequency [Hz]")
-    plt.ylabel("Phase [deg]")
+    plt.axvline(samplerate / 2, color='k', linewidth=1,)
+    plt.axvline(reporting_rate, color='k', linewidth=3,)
 
-plt.sca(ax1)
-plt.axvline(samplerate / 2, color='k', linewidth=1, label="Nyquist of Samplerate")
-plt.axvline(reporting_rate, color='k', linewidth=3, label="Typical Reporting Rate")
-plt.legend()
-plt.sca(ax2)
-plt.axvline(samplerate / 2, color='k', linewidth=1,)
-plt.axvline(reporting_rate, color='k', linewidth=3,)
+    plt.tight_layout()
 
-plt.tight_layout()
+    plt.savefig(f"./fractional_delay_order{order}.svg")
 
 plt.show()
