@@ -130,18 +130,21 @@ for order in [3, 4, 5, 6]:
 
             corrected_samples = np.convolve(taps[i], group_sample_values, mode="valid")
             label = "Corrected Group Samples" if i ==0 else None
-            plt.scatter([sample_t[order-1:] * 1e6], corrected_samples, color='r', alpha=1.0, marker="_", s=100, label=label)
+            plt.scatter([sample_t[order-1:] * 1e6], corrected_samples, color='r', alpha=1.0, marker="_", s=500, label=label)
 
         #   Corrected sample values applied to target sample time
         plt.scatter(sample_t * 1e6, func(sample_t), color='r', marker="|", s=500, label="Target Sample Time")
 
         plt.xlabel("Time [us]")
+        plt.ylabel("Signal Value")
 
         if xlim is not None:
             plt.xlim(*xlim)
 
         if xlim is None:
             plt.legend(loc='upper left', bbox_to_anchor=(0.0, 1.0))
+
+    plt.tight_layout(pad=1.1)
 
     plt.savefig(f"./fractional_delay_order{order}.svg")
 
