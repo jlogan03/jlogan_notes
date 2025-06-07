@@ -1,0 +1,1 @@
+Personal notes, conference materials, and similar life artifacts that do not require secrecy.
