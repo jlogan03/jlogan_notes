@@ -1,8 +1,0 @@
-README.md
-main.py
-pyproject.toml
-rust_boston_2026.egg-info/PKG-INFO
-rust_boston_2026.egg-info/SOURCES.txt
-rust_boston_2026.egg-info/dependency_links.txt
-rust_boston_2026.egg-info/requires.txt
-rust_boston_2026.egg-info/top_level.txt
