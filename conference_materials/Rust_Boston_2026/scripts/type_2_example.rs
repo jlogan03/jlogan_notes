@@ -3,6 +3,7 @@
 //! [dependencies]
 //! libm = "0.2.15"
 //! rayon = "1"
+//! num_cpus = "1"
 //! ```
 
 #[inline]
@@ -74,23 +75,30 @@ pub fn solid_angle_tetrahedron(
 }
 
 use rayon::prelude::*;
+use std::sync::LazyLock;
+
+/// Populated once on first access, then never again.
+/// No lock used for access after initialization!
+static PHYSICAL_CORES: LazyLock<usize> = LazyLock::new(num_cpus::get_physical);
 
 /// Vector-parallel variant of [solid_angle_tetrahedron_scalar]
+#[inline] // Enable cross-crate inlining
 pub fn solid_angle_tetrahedra_par(
     tetrahedra: &[[[f64; 3]; 4]],
     out: &mut [f64],
 ) -> Result<(), &'static str> {
-    // Chunk inputs
-    let num_chunks = 1024.min(out.len() / rayon::current_num_threads());
-    let (out_chunks, tet_chunks) = (
-        out.par_chunks_mut(num_chunks),
+    // Chunk inputs. Only use real cores!
+    let num_cores = rayon::current_num_threads().min(*PHYSICAL_CORES);
+    let num_chunks = 1024.min(out.len() / num_cores);
+    let (tet_chunks, out_chunks) = (
         tetrahedra.par_chunks(num_chunks),
+        out.par_chunks_mut(num_chunks),
     );
 
     // Do vector calculations over each chunk in parallel
-    (out_chunks, tet_chunks)
+    (tet_chunks, out_chunks)
         .into_par_iter()
-        .try_for_each(|(outc, tetc)| solid_angle_tetrahedron(tetc, outc))?;
+        .try_for_each(|(tetc, outc)| solid_angle_tetrahedron(tetc, outc))?;
 
     Ok(())
 }
