@@ -41,18 +41,21 @@ pub fn solid_angle_tetrahedron_scalar(
     v3: [f64; 3],
 ) -> f64 {
     // Vertex vectors
-    let (a, b, c) = (sub(v1, v0), sub(v2, v0), sub(v3, v0));
-    let (la, lb, lc) = (norm(a), norm(b), norm(c)); // Vertex vector lengths
+    let (a, b, c) = (sub(v1, v0), sub(v2, v0), sub(v3, v0));  // (m)
+    let (la, lb, lc) = (norm(a), norm(b), norm(c)); // (m) Vertex vector lengths
+    let abc = la * lb * lc;  // (m^3) Length product. Branch determined here!
 
-    // Check for degeneracy
-    if la == 0.0 || lb == 0.0 || lc == 0.0 {
-        return 0.0;
+    // Solid angle
+    let triple = dot(a, cross(b, c)); // (m^3) Scalar triple product
+    let denom = abc + dot(a, b) * lc + dot(a, c) * lb + dot(b, c) * la;  // (m^3)
+    let angle = 2.0 * libm::atan2(triple, denom); // (rad) f64::atan2 defers to libc
+
+    // Check for degeneracy _last_ to avoid disrupting flow
+    if abc != 0.0 {
+        angle
+    } else {
+        0.0
     }
-
-    let triple = dot(a, cross(b, c)); // Scalar triple product
-    let denom = la * lb * lc + dot(a, b) * lc + dot(a, c) * lb + dot(b, c) * la;
-
-    2.0 * libm::atan2(triple, denom) // f64::atan2 defers to libc
 }
 
 /// Vector variant of [solid_angle_tetrahedron_scalar]
