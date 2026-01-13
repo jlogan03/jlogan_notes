@@ -65,12 +65,14 @@ pub fn solid_angle_tetrahedron(
     out: &mut [f64],
 ) -> Result<(), &'static str> {
     // Check bounds
-    if out.len() != tetrahedra.len() {
+    let n = out.len();
+    if tetrahedra.len() != n {
         return Err("Dimension mismatch");
     }
 
     // Do calculations
-    for (i, tet) in tetrahedra.iter().enumerate() {
+    for i in 0..n {
+        let tet = tetrahedra[i];
         out[i] = solid_angle_tetrahedron_scalar(tet[0], tet[1], tet[2], tet[3]);
     }
 
