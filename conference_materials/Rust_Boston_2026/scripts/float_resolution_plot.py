@@ -1,5 +1,4 @@
 from pathlib import Path
-
 import numpy as np
 import plotly.graph_objects as go
 
@@ -15,18 +14,21 @@ def main() -> None:
             "min_normal": 2.0**-14,
             "min_subnormal": 2.0**-24,
             "max": 65504.0,
+            "dtype": np.float16,
         },
         "f32": {
             "eps": 2.0**-23,
             "min_normal": 2.0**-126,
             "min_subnormal": 2.0**-149,
             "max": 3.4028235e38,
+            "dtype": np.float32,
         },
         "f64": {
             "eps": 2.0**-52,
             "min_normal": 2.0**-1022,
             "min_subnormal": 2.0**-1074,
             "max": 1.7976931348623157e308,
+            "dtype": np.float64,
         },
     }
 
@@ -39,14 +41,29 @@ def main() -> None:
         min_normal = spec["min_normal"]
         min_subnormal = spec["min_subnormal"]
         max_value = spec["max"]
-        normal_bits = -np.log2(eps)
-        subnormal_x = np.logspace(np.log10(min_subnormal), np.log10(min_normal), 320)
-        normal_x = np.logspace(np.log10(min_normal), np.log10(max_value), 240)
+        dtype = spec["dtype"]
+        subnormal_x = np.logspace(
+            np.log10(min_subnormal), np.log10(min_normal), 1200
+        )
+        normal_x = np.logspace(
+            np.log10(min_normal), np.log10(max_value), 240
+        )
         x = np.concatenate([subnormal_x[:-1], normal_x])
+        normal_bits = -np.log2(eps)
         bits = np.full_like(x, normal_bits)
         subnormal_mask = (x < min_normal) & (x >= min_subnormal)
-        bits[subnormal_mask] = np.floor(np.log2(x[subnormal_mask] / min_subnormal))
-        bits[x < min_subnormal] = 0.0
+        subnormal_x_vals = x[subnormal_mask].astype(dtype, copy=False)
+        min_subnormal_val = np.array(min_subnormal, dtype=dtype)
+        subnormal_x_vals = np.maximum(subnormal_x_vals, min_subnormal_val)
+        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+            next_up = np.nextafter(subnormal_x_vals, np.array(np.inf, dtype=dtype))
+            next_down = np.nextafter(subnormal_x_vals, np.array(-np.inf, dtype=dtype))
+            delta_up = (next_up - subnormal_x_vals).astype(np.float64, copy=False)
+            delta_down = (subnormal_x_vals - next_down).astype(np.float64, copy=False)
+            local_resolution = np.maximum(delta_up, delta_down)
+        bits[subnormal_mask] = -np.log2(local_resolution / subnormal_x_vals)
+        bits[x <= float(min_subnormal)] = 0.0
+        bits[~np.isfinite(bits)] = 0.0
         fig.add_trace(
             go.Scatter(
                 x=x,
@@ -59,10 +76,13 @@ def main() -> None:
         )
         marker_count = 8
         if label == "f32":
-            marker_count = 4
+            marker_count = 3
         elif label == "f16":
-            marker_count = 2
-        marker_indices = np.linspace(0, len(x) - 1, marker_count, dtype=int)
+            marker_count = 1
+        normal_indices = np.where(x >= min_normal)[0]
+        marker_indices = np.linspace(
+            normal_indices[0], normal_indices[-1], marker_count, dtype=int
+        )
         fig.add_trace(
             go.Scatter(
                 x=x[marker_indices],
