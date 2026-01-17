@@ -1,0 +1,14 @@
+[project]
+name = "rust-boston-2026"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "interpn>=0.10.0",
+    "kaleido==0.2.1",
+    "numpy>=2.4.1",
+    "plotly>=6.5.1",
+    "scipy>=1.17.0",
+    "sympy>=1.14.0",
+]
