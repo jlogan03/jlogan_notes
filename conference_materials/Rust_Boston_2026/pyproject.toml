@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "interpn>=0.10.0",
     "kaleido==0.2.1",
+    "matplotlib>=3.10.8",
     "numpy>=2.4.1",
     "plotly>=6.5.1",
     "scipy>=1.17.0",
