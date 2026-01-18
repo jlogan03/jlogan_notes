@@ -32,7 +32,7 @@ def main() -> None:
         },
     }
 
-    line_color = "rgb(139, 196, 59)"
+    line_color = "#3b76c4"
     marker_symbols = ["circle-open", "square-open", "diamond-open"]
 
     fig = go.Figure()
@@ -103,8 +103,8 @@ def main() -> None:
             y=normal_bits,
             text=f"epsilon ≈ {eps:.2e}",
             showarrow=True,
-            arrowcolor="white",
-            font=dict(color="white"),
+            arrowcolor="black",
+            font=dict(color="black"),
             ax=40,
             ay=ay,
         )
@@ -114,11 +114,11 @@ def main() -> None:
         title_text="Magnitude",
         tickformat=".1e",
         showline=True,
-        linecolor="white",
+        linecolor="black",
         linewidth=1,
         mirror=True,
         ticks="outside",
-        tickcolor="white",
+        tickcolor="black",
         showgrid=False,
         zeroline=False,
     )
@@ -126,11 +126,11 @@ def main() -> None:
         title_text="Resolution (bits)",
         tickformat=".1f",
         showline=True,
-        linecolor="white",
+        linecolor="black",
         linewidth=1,
         mirror=True,
         ticks="outside",
-        tickcolor="white",
+        tickcolor="black",
         showgrid=False,
         zeroline=False,
     )
@@ -140,7 +140,7 @@ def main() -> None:
         margin=dict(t=60, l=70, r=40, b=60),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="white"),
+        font=dict(color="black"),
         legend=dict(
             orientation="h",
             yanchor="bottom",

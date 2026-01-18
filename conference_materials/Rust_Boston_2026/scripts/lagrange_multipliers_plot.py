@@ -15,7 +15,7 @@ def main() -> None:
 
     dark = "rgb(34, 34, 34)"
     light = "rgb(241, 241, 241)"
-    green = "rgb(138, 196, 59)"
+    blue = "#3b76c4"
 
     # Objective: f(x, y) = x^2 + 2y^2 with constraint y = 1 - x + 0.6(x - 2/3)^2.
     zz = xx**2 + 2.0 * yy**2
@@ -45,7 +45,7 @@ def main() -> None:
                 [0.0, dark],
                 [1.0, light],
             ],
-            line=dict(color=green, width=1),
+            line=dict(color=blue, width=1),
             showscale=False,
             hoverinfo="skip",
         )
@@ -55,7 +55,7 @@ def main() -> None:
             x=constraint_x,
             y=constraint_y,
             mode="lines",
-            line=dict(color=green, width=10),
+            line=dict(color=blue, width=10),
             name="Constraint: x + y = 1",
         )
     )
@@ -64,7 +64,7 @@ def main() -> None:
             x=[optimal_x],
             y=[optimal_y],
             mode="markers",
-            marker=dict(color=green, size=40, symbol="x"),
+            marker=dict(color=blue, size=40, symbol="x"),
             name="Optimal point",
         )
     )
